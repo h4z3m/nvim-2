@@ -44,5 +44,16 @@ vim.opt.splitbelow = true
 ---vim.opt.listchars = { tab = "» ", trail = "·", nbsp = "␣" }
 
 -- Minimal number of screen lines to keep above and below the cursor.
-vim.opt.scrolloff = 5
+vim.opt.scrolloff = 3
 
+-- Reduce redraw overhead
+vim.opt.lazyredraw = true
+vim.opt.ttyfast = true
+
+-- Disable mouse
+vim.opt.mouse = ""
+
+-- Minimal UI updates
+vim.opt.ruler = false
+vim.opt.showcmd = false
+vim.opt.showmode = false
