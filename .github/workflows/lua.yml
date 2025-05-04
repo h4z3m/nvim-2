@@ -9,9 +9,9 @@ jobs:
       - uses: actions/checkout@v3
 
       - name: Set up Lua
-        uses: leafo/gh-actions-lua@v9
+        uses: ilammy/setup-lua@v1
         with:
-          luaVersion: "5.4"
+          lua-version: "5.4"
 
       - name: Install luarocks
         uses: leafo/gh-actions-luarocks@v4
