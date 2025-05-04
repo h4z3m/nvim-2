@@ -3,18 +3,20 @@ name: Lua Format and Lint
 on: [push, pull_request]
 
 jobs:
-  format-lint:
+  lint-and-format:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - name: Set up Lua
-        uses: leafo/gh-actions-lua@v9
-        with:
-          luaVersion: "5.4"
-          cache: false
 
-      - name: Install luarocks
-        uses: leafo/gh-actions-luarocks@v4
+      - name: Install Lua
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y lua5.4 lua5.4-dev
+
+      - name: Install LuaRocks
+        run: |
+          sudo apt-get install -y luarocks
+          luarocks --version
 
       - name: Install luacheck
         run: luarocks install luacheck
