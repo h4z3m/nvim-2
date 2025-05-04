@@ -7,11 +7,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-
       - name: Set up Lua
-        uses: ilammy/setup-lua@v1.4.0
+        uses: leafo/gh-actions-lua@v9
         with:
-          lua-version: "5.4"
+          luaVersion: "5.4"
+          cache: false
 
       - name: Install luarocks
         uses: leafo/gh-actions-luarocks@v4
