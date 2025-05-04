@@ -9,7 +9,7 @@ jobs:
       - uses: actions/checkout@v3
 
       - name: Set up Lua
-        uses: ilammy/setup-lua@v1
+        uses: ilammy/setup-lua@v1.4.0
         with:
           lua-version: "5.4"
 
