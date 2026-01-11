@@ -95,6 +95,20 @@ return {
 				--  For example, in C this would take you to the header.
 				map("gD", vim.lsp.buf.declaration, "[G]oto [D]eclaration")
 
+				-- Toggle inline diagnostic messages (virtual text)
+
+				map("td",
+					function ()
+						local current = vim.diagnostic.config().virtual_text
+						vim.diagnostic.config({
+							virtual_text = not current
+						})	
+					end,"[T]oggle [D]iagnostics (virtual text)")
+
+				map('<C-l>', function ()
+					vim.fn.feedkeys(vim.fn['copilot#Accept'](), '')
+				end,  'Copilot Accept','i')
+
 				-- This function resolves a difference between neovim nightly (version 0.11) and stable (version 0.10)
 				---@param client vim.lsp.Client
 				---@param method vim.lsp.protocol.Method
@@ -236,78 +250,35 @@ return {
 				--   },
 				-- },
 			},
-			--
-			-- Ruff LSP - Fast linter and formatter in Rust
-			-- Combines and replaces functionality from flake8, black, isort, pydocstyle, etc.
-			ruff = {
-				enabled = true, -- Highly recommended to enable
-				settings = {
-					ruff = {
-						lint = {
-							run = "onSave", -- Options: "onType", "onSave", "manual"
-						},
-						-- To use a different config file:
-						-- path = { "~/.config/ruff/ruff.toml" },
-
-						-- Organize imports on save
-						organizeImports = true,
-
-						-- Use Ruff's formatter (replaces black and isort)
-						format = {
-							args = {},
-						},
-
-						-- Customize severity of different error codes
-						codeAction = {
-							disableRuleComment = {
-								enable = true,
-							},
-							fixViolation = {
-								enable = true,
-							},
-						},
-					},
-				},
-				-- Prefer Ruff for formatting over other formatters
-				on_attach = function(client, bufnr)
-					-- Disable formatting capabilities for other LSPs if ruff is active
-					if client.name ~= "ruff" then
-						client.server_capabilities.documentFormattingProvider = false
-					end
-
-					-- Optional: Create keymaps for Ruff organizing imports
-					vim.keymap.set("n", "<leader>ri", function()
-						vim.lsp.buf.execute_command({
-							command = "ruff.organizeImports",
-							arguments = { vim.uri_from_bufnr(0) },
-						})
-					end, { buffer = bufnr, desc = "Organize Imports" })
-				end,
-			},
-
+			
 			-- Basedpyright - Drop-in pyright replacement with better perf and extra features
 			-- Enable this instead of regular pyright for speed
 			basedpyright = {
-				enabled = true,
+				root_dir = function()
+					return vim.loop.cwd()
+				end,
+
 				settings = {
-					python = {
+					python = {  -- Note: this should be 'python', not 'basedpyright'
 						analysis = {
-							autoSearchPaths = true,
-							diagnosticMode = "workspace",
 							useLibraryCodeForTypes = true,
 							typeCheckingMode = "basic",
-
-							-- basedpyright-specific settings
-							enableServiceFeatures = {
-								hover = true,
-								navigation = true,
-								completion = true,
-								semanticHighlighting = true,
+							diagnosticMode = "workspace",
+							autoSearchPaths = true,
+							inlayHints = {
+								callArgumentNames = true,
 							},
-							stubPath = vim.fn.stdpath("data") .. "/lazy/python-type-stubs",
+							extraPaths = vim.split(vim.env.PYTHONPATH or "", ":"),
+							diagnosticSeverityOverrides = {
+								reportMissingTypeStubs = "none",
+								reportGeneralTypeIssues = "warning"
+							}
 						},
-					},
-				},
+						pythonPath = "/project/med/Wired/Install/miniforge3/envs/otn_tcl_python_framework/bin/python",
+						venvPath = "/project/med/Wired/Install/miniforge3/envs",
+						venv = "otn_tcl_python_framework"
+					}
+				}
 			},
 			-- Clang for C/C++
 			clangd = {
@@ -325,20 +296,20 @@ return {
 				},
 			},
 			-- Go
-			gopls = {
-				settings = {
-					gopls = {
-						gofumpt = true,
-						usePlaceholders = true,
-						staticcheck = true,
-						analyses = {
-							unusedparams = true,
-							nilness = true,
-							unusedwrite = true,
-						},
-					},
-				},
-			},
+			-- gopls = {
+			-- 	settings = {
+			-- 		gopls = {
+			-- 			gofumpt = true,
+			-- 			usePlaceholders = true,
+			-- 			staticcheck = true,
+			-- 			analyses = {
+			-- 				unusedparams = true,
+			-- 				nilness = true,
+			-- 				unusedwrite = true,
+			-- 			},
+			-- 		},
+			-- 	},
+			-- },
 		} -- End servers
 
 		-- Ensure the servers and tools above are installed
@@ -368,12 +339,14 @@ return {
 			automatic_installation = false,
 			handlers = {
 				function(server_name)
-					local server = servers[server_name] or {}
-					-- This handles overriding only values explicitly passed
-					-- by the server configuration above. Useful when disabling
-					-- certain features of an LSP (for example, turning off formatting for ts_ls)
-					server.capabilities = vim.tbl_deep_extend("force", {}, capabilities, server.capabilities or {})
-					require("lspconfig")[server_name].setup(server)
+					require("lspconfig")[server_name].setup(vim.tbl_deep_extend(
+						"force",
+						servers[server_name] or {},
+						{
+							on_attach = on_attach,
+							capabilities = capabilities,
+						}
+					))
 				end,
 			},
 		})

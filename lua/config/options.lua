@@ -30,9 +30,6 @@ vim.opt.showmode = false
 vim.opt.ignorecase = true
 vim.opt.smartcase = true
 
--- Keep signcolumn on by default
-vim.opt.signcolumn = "yes"
-
 -- Configure how new splits should be opened
 vim.opt.splitright = true
 vim.opt.splitbelow = true
@@ -50,10 +47,10 @@ vim.opt.scrolloff = 3
 vim.opt.lazyredraw = true
 vim.opt.ttyfast = true
 
--- Disable mouse
-vim.opt.mouse = ""
-
 -- Minimal UI updates
 vim.opt.ruler = false
 vim.opt.showcmd = false
 vim.opt.showmode = false
+
+-- Make the sign column always visible and wider
+--vim.opt.signcolumn = 'yes:9'

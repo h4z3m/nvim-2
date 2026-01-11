@@ -4,7 +4,7 @@ return {
 		formatters_by_ft = {
 			lua = { "stylua" },
 			-- Conform will run multiple formatters sequentially
-			python = { "ruff", "isort", "black", stop_after_first = true },
+			python = { "black", "isort", },
 			-- You can customize some of the format options for the filetype (:help conform.format)
 			rust = { "rustfmt" },
 			-- Conform will run the first available formatter
@@ -16,8 +16,22 @@ return {
 		},
 		format_on_save = {
 			-- These options will be passed to conform.format()
-			timeout_ms = 500,
+			timeout_ms = 1000,
 			lsp_format = "fallback",
 		},
+		formatters={
+
+			black={
+				prepend_args = function()
+					local root = vim.fn.findfile("pyproject.toml", ".;")
+					if root ~= "" then
+						return { "--config", root }
+					end
+					return {}
+				end,
+
+			}
+		},
 	},
+
 }

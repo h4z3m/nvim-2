@@ -18,7 +18,15 @@ return {
 	{
 		"lewis6991/gitsigns.nvim",
 		config = function()
-			require("gitsigns").setup()
+			-- require("gitsigns").setup(
+			-- 	{    
+			-- 		signcolumn = auto,
+			-- 		on_attach = function()
+			-- 			vim.wo.signcolumn = "yes"
+			-- 		end
+			-- 	}
+			--
+			-- )
 		end,
 		event = { "BufReadPre", "BufNewFile" },
 	},
@@ -63,4 +71,34 @@ return {
 			},
 		},
 	},
+	{'f-person/git-blame.nvim'},
+	{
+		"github/copilot.vim",
+		lazy = false,
+		config = function() -- Mapping tab is already used in NvChad
+			vim.g.copilot_no_tab_map = true; -- Disable tab mapping
+			vim.g.copilot_assume_mapped = true; -- Assume that the mapping is already done
+		end
+	},
+	{ 
+		"danymat/neogen", 
+		config = true,
+		-- Uncomment next line if you want to follow only stable versions
+		-- version = "*" 
+	},
+	{
+		"nvim-neo-tree/neo-tree.nvim",
+		branch = "v3.x",
+		dependencies = {
+			"nvim-lua/plenary.nvim",
+			"nvim-tree/nvim-web-devicons", -- not strictly required, but recommended
+			"MunifTanjim/nui.nvim",
+		},
+		lazy = false, -- neo-tree will lazily load itself
+		---@module "neo-tree"
+		---@type neotree.Config?
+		opts = {
+			auto_open = true  -- This will make Neo-tree open on startup
+		},
+	}
 }

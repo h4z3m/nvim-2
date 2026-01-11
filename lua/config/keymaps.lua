@@ -18,3 +18,23 @@ vim.keymap.set("n", "<leader>cf", function()
 		lsp_format = "fallback",
 	})
 end, { desc = "Format current file" })
+
+
+
+
+vim.api.nvim_create_user_command('LspStatus', function()
+    local clients = vim.lsp.get_active_clients()
+    if #clients == 0 then
+        print("No LSP clients running")
+        return
+    end
+    
+    for _, client in pairs(clients) do
+        print(string.format(
+            "LSP: %s, Root: %s, Settings: %s",
+            client.name,
+            client.config.root_dir or "no root",
+            vim.inspect(client.config.settings or {})
+        ))
+    end
+end, {})
